@@ -6,6 +6,9 @@
     <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
     <RootNamespace>InternalKnowledgeAssistant.Web</RootNamespace>
     <AssemblyName>InternalKnowledgeAssistant.Web</AssemblyName>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <SkipNSwag Condition="'$(SkipNSwag)' == ''">true</SkipNSwag>
   </PropertyGroup>
 
   <ItemGroup>
@@ -59,7 +62,25 @@
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
 
-  <Target Name="NSwag" AfterTargets="PostBuildEvent" Condition=" '$(Configuration)' == 'Debug' And '$(SkipNSwag)' != 'True' ">
+  <Target Name="NSwag" AfterTargets="Build" Condition=" '$(Configuration)' == 'Debug' And '$(SkipNSwag)' != 'True' ">
+    <!-- Only run NSwag if the output files are older than the source files -->
+    <ItemGroup>
+      <NSwagInputs Include="$(ProjectDir)**/*.cs" />
+      <NSwagOutputs Include="$(ProjectDir)wwwroot/api/specification.json" />
+      <NSwagOutputs Include="$(ProjectDir)ClientApp/src/app/web-api-client.ts" />
+    </ItemGroup>
+    
+    <Exec ConsoleToMSBuild="true" ContinueOnError="true" WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_Net90) run config.nswag /variables:Configuration=$(Configuration)">
+      <Output TaskParameter="ExitCode" PropertyName="NSwagExitCode" />
+      <Output TaskParameter="ConsoleOutput" PropertyName="NSwagOutput" />
+    </Exec>
+
+    <Message Text="$(NSwagOutput)" Condition="'$(NSwagExitCode)' == '0'" Importance="low" />
+    <Error Text="$(NSwagOutput)" Condition="'$(NSwagExitCode)' != '0'" />
+  </Target>
+
+  <!-- Manual NSwag generation target -->
+  <Target Name="GenerateNSwag" Condition="'$(SkipNSwag)' != 'True'">
     <Exec ConsoleToMSBuild="true" ContinueOnError="true" WorkingDirectory="$(ProjectDir)" EnvironmentVariables="ASPNETCORE_ENVIRONMENT=Development" Command="$(NSwagExe_Net90) run config.nswag /variables:Configuration=$(Configuration)">
       <Output TaskParameter="ExitCode" PropertyName="NSwagExitCode" />
       <Output TaskParameter="ConsoleOutput" PropertyName="NSwagOutput" />
