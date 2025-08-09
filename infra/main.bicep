@@ -22,9 +22,10 @@ param logAnalyticsName string = ''
 param applicationInsightsName string = ''
 param applicationInsightsDashboardName string = ''
 param keyVaultName string = ''
+param forceNewKeyVault bool = false
 param appServiceName string = ''
-param dbServerName string = ''
-param dbName string = ''
+// param dbServerName string = ''  // Commented out - not used in free deployment
+// param dbName string = ''        // Commented out - not used in free deployment
 
 // Database passwords commented out for FREE deployment
 // @secure()
@@ -45,8 +46,7 @@ var tags = {
 }
 
 // Generate a unique token to be used in naming resources.
-// Added timestamp to ensure unique Key Vault name after soft delete
-var resourceToken = toLower(uniqueString(subscription().id, environmentName, location, utcNow()))
+var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
 
 // Name of the service defined in azure.yaml
 // A tag named azd-service-name with this value should be applied to the service host resource, such as:
@@ -81,7 +81,7 @@ module keyVault 'core/security/keyvault.bicep' = {
   params: {
     location: location
     tags: tags
-    name: !empty(keyVaultName) ? keyVaultName : '${abbrs.keyVaultVaults}${resourceToken}'
+    name: !empty(keyVaultName) ? keyVaultName : '${abbrs.keyVaultVaults}${resourceToken}${forceNewKeyVault ? '-new' : ''}'
     principalId: principalId
   }
   scope: rg
