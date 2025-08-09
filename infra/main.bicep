@@ -45,7 +45,8 @@ var tags = {
 }
 
 // Generate a unique token to be used in naming resources.
-var resourceToken = toLower(uniqueString(subscription().id, environmentName, location))
+// Added timestamp to ensure unique Key Vault name after soft delete
+var resourceToken = toLower(uniqueString(subscription().id, environmentName, location, utcNow()))
 
 // Name of the service defined in azure.yaml
 // A tag named azd-service-name with this value should be applied to the service host resource, such as:
