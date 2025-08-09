@@ -16,7 +16,8 @@ public static class DependencyInjection
     public static void AddInfrastructureServices(this IHostApplicationBuilder builder)
     {
         var connectionString = builder.Configuration.GetConnectionString("InternalKnowledgeAssistantDb");
-        Guard.Against.Null(connectionString, message: "Connection string 'InternalKnowledgeAssistantDb' not found.");
+        // Allow null connection string for in-memory database
+        // Guard.Against.Null(connectionString, message: "Connection string 'InternalKnowledgeAssistantDb' not found.");
 
         builder.Services.AddScoped<ISaveChangesInterceptor, AuditableEntityInterceptor>();
         builder.Services.AddScoped<ISaveChangesInterceptor, DispatchDomainEventsInterceptor>();
@@ -24,7 +25,17 @@ public static class DependencyInjection
         builder.Services.AddDbContext<ApplicationDbContext>((sp, options) =>
         {
             options.AddInterceptors(sp.GetServices<ISaveChangesInterceptor>());
-            options.UseSqlServer(connectionString);
+            
+            // Use In-Memory database for FREE deployment
+            if (builder.Environment.IsDevelopment() || string.IsNullOrEmpty(connectionString))
+            {
+                options.UseInMemoryDatabase("InternalKnowledgeAssistantDb");
+            }
+            else
+            {
+                options.UseSqlServer(connectionString);
+            }
+            
             options.ConfigureWarnings(warnings => warnings.Ignore(RelationalEventId.PendingModelChangesWarning));
         });
 

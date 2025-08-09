@@ -45,6 +45,7 @@
     <PackageVersion Include="SpecFlow.Plus.LivingDocPlugin" Version="3.9.57" />
     <PackageVersion Include="SpecFlow.NUnit" Version="3.9.74" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="$(EfcoreVersion)" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.InMemory" Version="$(EfcoreVersion)" />
     <PackageVersion Include="Testcontainers.MsSql" Version="4.0.0" />
   </ItemGroup>
 </Project>

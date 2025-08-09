@@ -26,11 +26,12 @@ param appServiceName string = ''
 param dbServerName string = ''
 param dbName string = ''
 
-@secure()
-param dbAdminPassword string
+// Database passwords commented out for FREE deployment
+// @secure()
+// param dbAdminPassword string
 
-@secure()
-param dbAppUserPassword string
+// @secure()
+// param dbAppUserPassword string
 
 var abbrs = loadJsonContent('./abbreviations.json')
 
@@ -99,6 +100,9 @@ module web 'services/web.bicep' = {
 }
 
 
+// Database module commented out for FREE deployment (using in-memory database)
+// Uncomment and provide database passwords in AZD_INITIAL_ENVIRONMENT_CONFIG to use Azure SQL Database
+/*
 module database 'core/database/sqlserver/sqlserver.bicep' = {
   name: 'database'
   params: {
@@ -113,6 +117,7 @@ module database 'core/database/sqlserver/sqlserver.bicep' = {
   }
   scope: rg
 }
+*/
 
 module webKeyVaultAccess 'core/security/keyvault-access.bicep' = {
   name: 'webKeyVaultAccess'
@@ -136,5 +141,6 @@ output AZURE_TENANT_ID string = tenant().tenantId
 output AZURE_KEY_VAULT_NAME string = keyVault.outputs.name
 output AZURE_KEY_VAULT_ENDPOINT string = keyVault.outputs.endpoint
 output APPLICATIONINSIGHTS_CONNECTION_STRING string = monitoring.outputs.applicationInsightsConnectionString
-output AZURE_SQL_CONNECTION_STRING_KEY string = database.outputs.connectionStringKey
+// Database output commented out for FREE deployment
+// output AZURE_SQL_CONNECTION_STRING_KEY string = database.outputs.connectionStringKey
 output WEB_BASE_URI string = web.outputs.uri
