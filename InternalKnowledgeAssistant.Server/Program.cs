@@ -19,6 +19,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+// Add health check endpoint for Fly.io
+app.MapGet("/health", () => Results.Ok(new { status = "healthy", timestamp = DateTime.UtcNow }));
+
 app.UseAuthorization();
 
 app.MapControllers();
