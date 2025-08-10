@@ -1,0 +1,6 @@
+@InternalKnowledgeAssistant.Server_HostAddress = http://localhost:5101
+
+GET {{InternalKnowledgeAssistant.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
