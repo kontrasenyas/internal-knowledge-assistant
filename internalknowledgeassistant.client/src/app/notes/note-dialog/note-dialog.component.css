@@ -1,0 +1,36 @@
+.form-container {
+  min-width: 400px;
+  padding: 16px 0;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+mat-dialog-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+mat-dialog-title mat-icon {
+  color: #1976d2;
+}
+
+mat-dialog-content {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+mat-dialog-actions {
+  padding: 16px 0;
+  gap: 8px;
+}
+
+@media (max-width: 600px) {
+  .form-container {
+    min-width: 300px;
+  }
+}
