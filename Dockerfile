@@ -35,4 +35,8 @@ RUN dotnet publish "InternalKnowledgeAssistant.Server.csproj" -c Release -o /app
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# Create data directory for SQLite database
+RUN mkdir -p /app/data
+
 ENTRYPOINT ["dotnet", "InternalKnowledgeAssistant.Server.dll"]

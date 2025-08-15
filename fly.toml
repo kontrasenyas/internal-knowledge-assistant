@@ -29,3 +29,7 @@ primary_region = "sea"
   cpu_kind = "shared"
   cpus = 1
   memory_mb = 1024
+
+[[mounts]]
+  source = "internal_knowledge_db"
+  destination = "/app/data"

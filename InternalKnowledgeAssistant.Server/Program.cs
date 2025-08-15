@@ -1,6 +1,5 @@
 using InternalKnowledgeAssistant.Server.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.SqlClient;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -38,16 +37,12 @@ if (builder.Environment.IsDevelopment())
 }
 else
 {
-    var sqlBuilder = new SqlConnectionStringBuilder(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-    );
-    // Managed Identity: no password, use Azure AD auth
-    sqlBuilder.Authentication = SqlAuthenticationMethod.ActiveDirectoryManagedIdentity;
-    connectionString = sqlBuilder.ConnectionString;
+    // For production, use the SQLite database file in the mounted volume
+    connectionString = "Data Source=/app/data/app.db";
 }
 
 builder.Services.AddDbContext<KnowledgeAssistantDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlite(connectionString));
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -76,5 +71,8 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapFallbackToFile("/index.html");
+
+// Initialize database
+await DatabaseInitializer.InitializeDatabaseAsync(app);
 
 app.Run();
