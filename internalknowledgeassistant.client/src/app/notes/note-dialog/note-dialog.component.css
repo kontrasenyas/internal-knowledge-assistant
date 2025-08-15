@@ -25,8 +25,8 @@ mat-dialog-content {
 }
 
 mat-dialog-actions {
-  padding: 16px 0;
-  gap: 8px;
+  padding: 24px 24px 24px 0;
+  gap: 16px;
 }
 
 @media (max-width: 600px) {
