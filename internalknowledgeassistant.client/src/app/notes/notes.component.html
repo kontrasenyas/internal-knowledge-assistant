@@ -20,16 +20,34 @@
         </button>
       </div>
 
+      <!-- Search Bar -->
+      <app-search-bar (searchChange)="onSearchChange($event)"></app-search-bar>
+
+      <!-- Advanced Search -->
+      <app-advanced-search (filtersChange)="onAdvancedFiltersChange($event)"></app-advanced-search>
+
       <div class="notes-content">
         <mat-progress-bar *ngIf="loading" mode="indeterminate"></mat-progress-bar>
         
-        <div *ngIf="!loading && notes.length === 0" class="no-notes">
+        <!-- Search Results Info -->
+        <div *ngIf="searchQuery && !loading" class="search-info">
+          <mat-icon>search</mat-icon>
+          <span>Search results for "{{ searchQuery }}" ({{ filteredNotes.length }} notes found)</span>
+        </div>
+        
+        <div *ngIf="!loading && filteredNotes.length === 0 && notes.length > 0" class="no-search-results">
+          <mat-icon>search_off</mat-icon>
+          <p>No notes found matching "{{ searchQuery }}"</p>
+          <button mat-button (click)="onSearchChange('')">Clear search</button>
+        </div>
+        
+        <div *ngIf="!loading && filteredNotes.length === 0 && notes.length === 0" class="no-notes">
           <mat-icon>inbox</mat-icon>
           <p>No notes found. Create your first note!</p>
         </div>
 
-        <div *ngIf="!loading && notes.length > 0" class="notes-grid">
-          <mat-card *ngFor="let note of notes" class="note-card">
+        <div *ngIf="!loading && filteredNotes.length > 0" class="notes-grid">
+          <mat-card *ngFor="let note of filteredNotes" class="note-card">
             <mat-card-header>
               <mat-card-title>{{ note.title }}</mat-card-title>
               <mat-card-subtitle>

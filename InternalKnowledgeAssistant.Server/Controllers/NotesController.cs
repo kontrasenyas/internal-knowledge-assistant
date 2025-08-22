@@ -22,6 +22,24 @@ namespace InternalKnowledgeAssistant.Server.Controllers
             return await _context.Notes.ToListAsync();
         }
 
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<Note>>> SearchNotes([FromQuery] string query)
+        {
+            if (string.IsNullOrWhiteSpace(query))
+            {
+                return await _context.Notes.ToListAsync();
+            }
+
+            var searchQuery = query.Trim().ToLower();
+            var notes = await _context.Notes
+                .Where(n => n.Title.ToLower().Contains(searchQuery) || 
+                           (n.Content != null && n.Content.ToLower().Contains(searchQuery)))
+                .OrderByDescending(n => n.CreatedAt)
+                .ToListAsync();
+
+            return notes;
+        }
+
         [HttpGet("{id}")]
         public async Task<ActionResult<Note>> GetNote(int id)
         {
