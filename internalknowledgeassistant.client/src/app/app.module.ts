@@ -18,6 +18,8 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -26,6 +28,7 @@ import { NoteDialogComponent } from './notes/note-dialog/note-dialog.component';
 import { SearchBarComponent } from './notes/search-bar/search-bar.component';
 import { AdvancedSearchComponent } from './notes/advanced-search/advanced-search.component';
 import { SearchResultsComponent } from './notes/search-results/search-results.component';
+import { AIChatComponent } from './notes/ai-chat/ai-chat.component';
 
 @NgModule({
   declarations: [
@@ -34,7 +37,8 @@ import { SearchResultsComponent } from './notes/search-results/search-results.co
     NoteDialogComponent,
     SearchBarComponent,
     AdvancedSearchComponent,
-    SearchResultsComponent
+    SearchResultsComponent,
+    AIChatComponent
   ],
   imports: [
     BrowserModule,
@@ -56,7 +60,9 @@ import { SearchResultsComponent } from './notes/search-results/search-results.co
     MatNativeDateModule,
     MatProgressBarModule,
     MatSelectModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    MatProgressSpinnerModule,
+    MatTooltipModule
   ],
   providers: [],
   bootstrap: [AppComponent]

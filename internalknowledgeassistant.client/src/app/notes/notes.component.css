@@ -127,6 +127,10 @@
   flex: 1;
 }
 
+.ai-chat-section {
+  margin-top: 30px;
+}
+
 @media (max-width: 768px) {
   .notes-container {
     padding: 16px;
