@@ -1,13 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Note } from '../../models/note';
-
-interface ChatMessage {
-  id: number;
-  type: 'user' | 'ai';
-  content: string;
-  timestamp: Date;
-}
+import { MockAIService, ChatMessage, AIResponse } from '../../services/mock-ai.service';
 
 @Component({
   selector: 'app-ai-chat',
@@ -22,14 +16,7 @@ export class AIChatComponent implements OnInit {
   isProcessing = false;
   chatHistory: ChatMessage[] = [];
   
-  // Mock AI responses for demonstration
-  private mockResponses = [
-    "Based on your notes, I can help you with that. This appears to be related to your project documentation.",
-    "I found some relevant information in your notes about this topic. Would you like me to elaborate?",
-    "From what I can see in your stored notes, this question relates to your recent work. Let me break it down for you.",
-    "I've analyzed your notes and can provide some insights on this matter. Here's what I found relevant.",
-    "Based on the information in your knowledge base, here's what I can tell you about this topic."
-  ];
+  constructor(private mockAIService: MockAIService) {}
 
   ngOnInit(): void {
     // Add a welcome message
@@ -56,34 +43,28 @@ export class AIChatComponent implements OnInit {
     this.isProcessing = true;
     this.questionControl.setValue('');
 
-    // Simulate AI processing delay
-    setTimeout(() => {
-      const mockResponse = this.getMockResponse(question);
-      this.chatHistory.push({
-        id: Date.now() + 1,
-        type: 'ai',
-        content: mockResponse,
-        timestamp: new Date()
-      });
-      this.isProcessing = false;
-    }, 1000 + Math.random() * 2000); // Random delay between 1-3 seconds
-  }
-
-  private getMockResponse(question: string): string {
-    // Simple logic to provide varied responses
-    const randomIndex = Math.floor(Math.random() * this.mockResponses.length);
-    let response = this.mockResponses[randomIndex];
-    
-    // Add some context awareness based on question keywords
-    if (question.toLowerCase().includes('project')) {
-      response += " I can see you have several project-related notes that might be helpful.";
-    } else if (question.toLowerCase().includes('meeting')) {
-      response += " I found some meeting notes in your collection that could be relevant.";
-    } else if (question.toLowerCase().includes('deadline')) {
-      response += " There are some time-sensitive items in your notes that might need attention.";
-    }
-    
-    return response;
+    // Use the mock AI service to get a response
+    this.mockAIService.processQuestion(question, this.notes).subscribe({
+      next: (aiResponse: AIResponse) => {
+        this.chatHistory.push({
+          id: Date.now() + 1,
+          type: 'ai',
+          content: aiResponse.message,
+          timestamp: new Date()
+        });
+        this.isProcessing = false;
+      },
+      error: (error) => {
+        console.error('Error getting AI response:', error);
+        this.chatHistory.push({
+          id: Date.now() + 1,
+          type: 'ai',
+          content: 'Sorry, I encountered an error while processing your question. Please try again.',
+          timestamp: new Date()
+        });
+        this.isProcessing = false;
+      }
+    });
   }
 
   clearChat(): void {
