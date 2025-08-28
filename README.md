@@ -2,6 +2,8 @@
 
 A full-stack application that provides an AI-powered knowledge management system using Llama3 to intelligently search and answer questions from your team's documented knowledge base.
 
+URL: https://internal-knowledge-assistant.fly.dev/
+
 ## Frontend-Backend Integration
 
 ### AI Chat Service
