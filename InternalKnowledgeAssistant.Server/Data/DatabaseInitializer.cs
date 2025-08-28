@@ -25,26 +25,7 @@ namespace InternalKnowledgeAssistant.Server.Data
                 {
                     logger.LogInformation("Seeding database with initial data...");
                     
-                    var sampleNotes = new[]
-                    {
-                        new Models.Note
-                        {
-                            Title = "Welcome to Internal Knowledge Assistant",
-                            Content = "This is your first note. You can edit, delete, or create new notes to organize your internal knowledge.",
-                            CreatedAt = DateTime.UtcNow
-                        },
-                        new Models.Note
-                        {
-                            Title = "Getting Started",
-                            Content = "Use this application to store and organize important information, procedures, and knowledge that your team needs to access regularly.",
-                            CreatedAt = DateTime.UtcNow
-                        }
-                    };
-                    
-                    context.Notes.AddRange(sampleNotes);
-                    await context.SaveChangesAsync();
-                    
-                    logger.LogInformation("Database seeded successfully with {Count} notes", sampleNotes.Length);
+                    logger.LogInformation("Database is empty. Please add notes through the application interface.");
                 }
                 else
                 {

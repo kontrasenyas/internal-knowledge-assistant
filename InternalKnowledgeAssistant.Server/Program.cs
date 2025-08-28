@@ -1,4 +1,6 @@
 using InternalKnowledgeAssistant.Server.Data;
+using InternalKnowledgeAssistant.Server.Application.Services;
+using InternalKnowledgeAssistant.Server.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,24 +10,40 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAngularApp", policy =>
     {
-        // Get CORS origins from configuration based on environment
-        var corsOrigins = builder.Configuration.GetSection("CorsOrigins")
-            .GetSection(builder.Environment.EnvironmentName)
-            .Get<string[]>();
-
-        if (corsOrigins != null && corsOrigins.Length > 0)
+        if (builder.Environment.IsDevelopment())
         {
-            policy.WithOrigins(corsOrigins);
+            // In development, allow all origins for easier testing
+            policy.SetIsOriginAllowed(origin => true)
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
         }
         else
         {
-            // Fallback: Allow localhost for development if no config found
-            policy.WithOrigins("https://localhost:59874", "http://localhost:59874");
+            // In production, use configured origins
+            var corsOrigins = builder.Configuration.GetSection("CorsOrigins")
+                .GetSection(builder.Environment.EnvironmentName)
+                .Get<string[]>();
+
+            if (corsOrigins != null && corsOrigins.Length > 0)
+            {
+                policy.WithOrigins(corsOrigins);
+            }
+            else
+            {
+                // Fallback: Allow localhost for development if no config found
+                policy.WithOrigins(
+                    "https://localhost:59874", 
+                    "http://localhost:59874",
+                    "https://localhost:4200",
+                    "http://localhost:4200"
+                );
+            }
+            
+            policy.AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
         }
-        
-        policy.AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
     });
 });
 
@@ -43,6 +61,13 @@ else
 
 builder.Services.AddDbContext<KnowledgeAssistantDbContext>(options =>
     options.UseSqlite(connectionString));
+
+// Register application services
+builder.Services.AddScoped<IRetrieverService, RetrieverService>();
+builder.Services.AddScoped<IPromptBuilder, PromptBuilder>();
+
+// Register infrastructure services
+builder.Services.AddHttpClient<ILlamaClient, LlamaClient>();
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();

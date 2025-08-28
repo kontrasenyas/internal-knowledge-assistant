@@ -172,9 +172,37 @@
   justify-content: space-between;
 }
 
-.input-actions button {
-  min-width: 120px;
-}
+  .input-actions button {
+    min-width: 120px;
+  }
+
+  .message-citations {
+    margin-top: 12px;
+    padding: 8px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
+
+  .citation {
+    display: inline-block;
+    margin: 2px 4px;
+    padding: 2px 6px;
+    background-color: rgba(0, 0, 0, 0.1);
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 0.8em;
+  }
+
+  .message-followup {
+    margin-top: 8px;
+    padding: 8px;
+    background-color: rgba(25, 118, 210, 0.1);
+    border-left: 3px solid #1976d2;
+    border-radius: 0 4px 4px 0;
+    font-style: italic;
+    color: #1976d2;
+  }
 
 .chat-info {
   background: #e3f2fd;

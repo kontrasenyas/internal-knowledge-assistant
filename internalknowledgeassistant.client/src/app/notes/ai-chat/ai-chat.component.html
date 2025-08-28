@@ -22,6 +22,17 @@
           <span class="message-time">{{ message.timestamp | date:'shortTime' }}</span>
         </div>
         <div class="message-text">{{ message.content }}</div>
+        
+        <!-- Display citations if available -->
+        <div *ngIf="message.citations && message.citations.length > 0" class="message-citations">
+          <strong>Sources:</strong>
+          <span *ngFor="let citation of message.citations" class="citation">{{ citation }}</span>
+        </div>
+        
+        <!-- Display follow-up suggestion if available -->
+        <div *ngIf="message.followUp" class="message-followup">
+          <em>{{ message.followUp }}</em>
+        </div>
       </div>
     </div>
     
@@ -68,14 +79,22 @@
         <mat-icon>clear_all</mat-icon>
         Clear Chat
       </button>
+      
+      <button mat-button 
+              color="accent" 
+              [disabled]="!currentCursor"
+              (click)="showMore()">
+        <mat-icon>more_horiz</mat-icon>
+        Show More
+      </button>
     </div>
   </div>
 
   <div class="chat-info">
     <p>
       <mat-icon>info</mat-icon>
-      This is a mock AI assistant. You can ask questions and see how the interface works.
-      To integrate real AI functionality, you'll need to implement the backend service.
+      This AI assistant is powered by Llama3 and can search through your knowledge base.
+      Ask questions and use "Show More" to get additional information.
     </p>
   </div>
 </div>

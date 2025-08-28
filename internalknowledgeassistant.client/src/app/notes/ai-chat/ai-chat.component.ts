@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Note } from '../../models/note';
-import { MockAIService, ChatMessage, AIResponse } from '../../services/mock-ai.service';
+import { AIChatService, ChatMessage, AssistantResponse } from '../../services/ai-chat.service';
 
 @Component({
   selector: 'app-ai-chat',
@@ -15,8 +15,9 @@ export class AIChatComponent implements OnInit {
   questionControl = new FormControl('');
   isProcessing = false;
   chatHistory: ChatMessage[] = [];
+  currentCursor: string | null = null;
   
-  constructor(private mockAIService: MockAIService) {}
+  constructor(private aiChatService: AIChatService) {}
 
   ngOnInit(): void {
     // Add a welcome message
@@ -43,18 +44,24 @@ export class AIChatComponent implements OnInit {
     this.isProcessing = true;
     this.questionControl.setValue('');
 
-    // Use the mock AI service to get a response
-    this.mockAIService.processQuestion(question, this.notes).subscribe({
-      next: (aiResponse: AIResponse) => {
+    // Use the AI chat service to get a response
+    this.aiChatService.sendMessage(question, this.getConversationHistory(), this.currentCursor).subscribe({
+      next: (response: AssistantResponse) => {
         this.chatHistory.push({
           id: Date.now() + 1,
           type: 'ai',
-          content: aiResponse.message,
-          timestamp: new Date()
+          content: response.answer,
+          timestamp: new Date(),
+          citations: response.citations,
+          followUp: response.follow_up
         });
+        
+        // Store the next cursor for "Show More" functionality
+        this.currentCursor = response.next_cursor;
+        
         this.isProcessing = false;
       },
-      error: (error) => {
+      error: (error: any) => {
         console.error('Error getting AI response:', error);
         this.chatHistory.push({
           id: Date.now() + 1,
@@ -74,6 +81,26 @@ export class AIChatComponent implements OnInit {
       content: 'Chat history cleared. How can I help you today?',
       timestamp: new Date()
     }];
+    this.currentCursor = null;
+  }
+
+  /**
+   * Get conversation history as an array of strings for the API
+   */
+  private getConversationHistory(): string[] {
+    return this.chatHistory
+      .filter(message => message.type === 'user')
+      .map(message => message.content);
+  }
+
+  /**
+   * Request more information using the current cursor
+   */
+  showMore(): void {
+    if (this.currentCursor) {
+      this.questionControl.setValue('more');
+      this.askQuestion();
+    }
   }
 
   get isReady(): boolean {
